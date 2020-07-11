@@ -2,30 +2,51 @@
 
 # Welcome Message
 echo "Welcome to the world of Gambling."
- 
-# Assign variables and add values(Money).
+
+declare -A gamblerPaidPerDay
+
+# Declare variables and assign values. 
 stakeMoneyPerDay=100;
 betMoneyPerGame=1;
-
-# Added variables for adding a limit for minimum money lost and maximum money wins.
+totalDaysPlayed=20;
 maxMoneyWinPerDay=150;
-minMoneyLoosePerDay=50;
+minMoneyLostPerDay=50;
+
+totalStakeAmount=$((stakeMoneyPerDay*totalDaysPlayed));
 moneyEarns=$((stakeMoneyPerDay));
+exactMoneyEarn=0;
 
-# Apply while condition and checks the condition mets or not
-while [[ $moneyEarns -le $maxMoneyWinPerDay && $moneyEarns -ge $minMoneyLoosePerDay ]]
+# Gambler plays for 20 Days. 
+for (( daysCount=1;daysCount<=$totalDaysPlayed;daysCount++ ))
 do
-	gameResult=$(($RANDOM%2));
+	while [[ $moneyEarns -le $maxMoneyWinPerDay && $moneyEarns -ge $minMoneyLostPerDay ]]
+	do
+		gameResult=$(($RANDOM%2));
 
-	# Apply if condition and if Gamble wins or lost.
-	if [[ $gameResult -eq 1 ]]
-	then
-		echo "Gambler Win"
-		((moneyEarns++));
-	else
-		echo "Gambler lost"
-		((moneyEarns--));
-	fi
+		if [[ $gameResult -eq 1 ]]
+		then
+			((moneyEarns++));
+		else
+			((moneyEarns--));
+		fi
+	done
+	gamblerPaidPerDay[daysCount]=$((moneyEarns));
+	exactMoneyEarn=$(($exactMoneyEarn+$moneyEarns));
+	moneyEarns=$((stakeMoneyPerDay));
 done
 
-#End of Use Case 03
+echo "After 20 days, Total Amount Gambler Earns: $exactMoneyEarn"
+
+if [[ $exactMoneyEarn -gt $totalStakeAmount ]]
+then
+	moneyWins=`expr $exactMoneyEarn - $totalStakeAmount`
+	echo "Gambler wins: $moneyWins"
+elif [[ $exactMoneyEarn -lt $totalStakeAmount ]]
+then
+	moneyLost=`expr $totalStakeAmount - $exactMoneyEarn`
+	echo "Gambler lost: $moneyLost"
+else
+	echo "Gambler has Neither Won Nor Lost."
+fi
+
+#End of UseCase 04
