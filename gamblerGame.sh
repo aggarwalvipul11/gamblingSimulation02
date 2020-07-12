@@ -11,15 +11,20 @@ betMoneyPerGame=1;
 totalDaysPlayed=20;
 maxMoneyWinPerDay=150;
 minMoneyLostPerDay=50;
-
-totalStakeAmount=$((stakeMoneyPerDay*totalDaysPlayed));
+totalDaysInAMonth=30;
+totalStakeAmount=$((stakeMoneyPerDay*totalDaysInAMonth));
 moneyEarns=$((stakeMoneyPerDay));
 exactMoneyEarn=0;
+countProfitDays=0;
+countLossDays=0;
+findValue=0;
+totalMoneyWinsInMonth=0;
+totalMoneyLostInMonth=0;
 
-# Gambler plays for 20 Days. 
-for (( daysCount=1;daysCount<=$totalDaysPlayed;daysCount++ ))
+# Gambler plays for 1 Month. 
+for (( daysCount=1;daysCount<=$totalDaysInAMonth;daysCount++ ))
 do
-	while [[ $moneyEarns -le $maxMoneyWinPerDay && $moneyEarns -ge $minMoneyLostPerDay ]]
+	while [[ $moneyEarns -lt $maxMoneyWinPerDay && $moneyEarns -gt $minMoneyLostPerDay ]]
 	do
 		gameResult=$(($RANDOM%2));
 
@@ -30,23 +35,31 @@ do
 			((moneyEarns--));
 		fi
 	done
-	gamblerPaidPerDay[daysCount]=$((moneyEarns));
-	exactMoneyEarn=$(($exactMoneyEarn+$moneyEarns));
+        if [[ $moneyEarns -eq $maxMoneyWinPerDay ]]
+        then    
+            ((countProfitDays++));
+            totalMoneyWinsInMonth=$(($totalMoneyWinsInMonth+$moneyEarns));
+        elif [[ $moneyEarns -eq $minMoneyLostPerDay ]]
+        then
+            ((countLossDays++));
+            totalMoneyLostInMonth=$(($totalMoneyLostInMonth+$moneyEarns));
+        else
+            echo "No Loss No Profit!"
+        fi                        
+    gamblerPaidPerDay[daysCount]=$((moneyEarns));
+	exactMoneyEarn=$(($exactMoneyEarn+$moneyEarns));    
 	moneyEarns=$((stakeMoneyPerDay));
 done
 
-echo "After 20 days, Total Amount Gambler Earns: $exactMoneyEarn"
-
 if [[ $exactMoneyEarn -gt $totalStakeAmount ]]
 then
-	moneyWins=`expr $exactMoneyEarn - $totalStakeAmount`
-	echo "Gambler wins: $moneyWins"
+
+    echo "At End of Month, Gambler Wins $countProfitDays Days and $totalMoneyWinsInMonth Dollar."
 elif [[ $exactMoneyEarn -lt $totalStakeAmount ]]
 then
-	moneyLost=`expr $totalStakeAmount - $exactMoneyEarn`
-	echo "Gambler lost: $moneyLost"
+    echo "At End of Month, Gambler Lost $countLossDays Days and $totalMoneyLostInMonth Dollar."
 else
-	echo "Gambler has Neither Won Nor Lost."
+    echo "Gambler has Neither Won Nor Lost."
 fi
 
-#End of UseCase 04
+#End of UseCase 05
