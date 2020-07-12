@@ -3,70 +3,73 @@
 # Welcome Message
 echo "Welcome to the world of Gambling."
 
-declare -a gamblerPaidPerDay
-declare -a luckiestDay
-declare -a unluckiestDay
+declare -A gamblerPaidPerDay
 
 # Declare variables and assign values. 
-stakeMoneyPerDay=100;
-betMoneyPerGame=1;
-totalDaysInMonth=30;
-tranferStakeMoneyPerDay=0;
-finalMoneyInMonth=0;
-newStakeMoneyPerDay=0;
-tempWin=0;
-tempLost=0;
-winPerDay=0;
-lostPerDay=0;
-dayCountWin=0;
-dayCountLost=0;
-
-totalStakeAmount=$((stakeMoneyPerDay*totalDaysInMonth));
-moneyEarns=$((stakeMoneyPerDay));
-exactMoneyEarn=0;
-
+resetValues() {
+    stakeMoneyPerDay=100;
+    betMoneyPerGame=1;
+    totalDaysPlayed=20;
+    maxMoneyWinPerDay=150;
+    minMoneyLostPerDay=50;
+    totalDaysInAMonth=30;
+    totalStakeAmount=$((stakeMoneyPerDay*totalDaysInAMonth));
+    moneyEarns=$((stakeMoneyPerDay));
+    exactMoneyEarn=0;
+    countProfitDays=0;
+    countLossDays=0;
+    findValue=0;
+    totalMoneyWinsInMonth=0;
+    totalMoneyLostInMonth=0;
+}
 # Gambler plays for 20 Days. 
-for (( daysCount=1;daysCount<=$totalDaysInMonth;daysCount++ ))
+daysCountInMonth() {
+    for (( daysCount=1;daysCount<=$totalDaysInAMonth;daysCount++ ))
+    do
+        while [[ $moneyEarns -lt $maxMoneyWinPerDay && $moneyEarns -gt $minMoneyLostPerDay ]]
+        do
+            gameResult=$(($RANDOM%2));
+
+            if [[ $gameResult -eq 1 ]]
+            then
+                ((moneyEarns++));
+            else
+                ((moneyEarns--));
+            fi
+        done
+            if [[ $moneyEarns -eq $maxMoneyWinPerDay ]]
+            then    
+                ((countProfitDays++));
+                totalMoneyWinsInMonth=$(($totalMoneyWinsInMonth+$moneyEarns));
+            elif [[ $moneyEarns -eq $minMoneyLostPerDay ]]
+            then
+                ((countLossDays++));
+                totalMoneyLostInMonth=$(($totalMoneyLostInMonth+$moneyEarns));
+            else
+                echo "No Loss No Profit!"
+            fi                        
+        gamblerPaidPerDay[daysCount]=$((moneyEarns));
+        exactMoneyEarn=$(($exactMoneyEarn+$moneyEarns));    
+        moneyEarns=$((stakeMoneyPerDay));
+    done
+}
+
+monthCheck=1;
+
+while [[ $monthCheck -le 12 ]]
 do
-    tranferStakeMoneyPerDay=$(($newStakeMoneyPerDay+$stakeMoneyPerDay));
-    stakeGamePercent=$(($tranferStakeMoneyPerDay/2));
-    maxMoneyWinPerDay=$((tranferStakeMoneyPerDay+stakeGamePercent));
-    minMoneyLostPerDay=$((tranferStakeMoneyPerDay-stakeGamePercent));
-	
-    while [[ $moneyEarns -lt $maxMoneyWinPerDay && $moneyEarns -gt $minMoneyLostPerDay ]]
-	do
-		gameResult=$(($RANDOM%2));
-
-		if [[ $gameResult -eq 1 ]]
-		then
-			((moneyEarns++));
-		else
-			((moneyEarns--));
-		fi
-	done
-
-    if [[ $tranferStakeMoneyPerDay -lt $moneyEarns ]]
+    resetValues
+    daysCountInMonth    
+    if [[ $exactMoneyEarn -gt $totalStakeAmount ]]
     then
-        winsMoney=$(($moneyEarns-$tranferStakeMoneyPerDay))
-        #echo "Start: $tranferStakeMoneyPerDay You won on Day"$daysCount $winsMoney "End: $moneyEarns"
-        if [[ $winsMoney -gt $tempWin ]]
-        then
-            tempWin=$(($winsMoney))
-            winPerDay=$(($daysCount))
-        fi
+        echo "At end of $monthCheck month, Gambler Wins $countProfitDays Days and continues to play next month :)"
+        resetValues
+        daysCountInMonth
     else
-        lostMoney=$(($tranferStakeMoneyPerDay-$moneyEarns))
-        #echo "Start: $tranferStakeMoneyPerDay You lost on Day"$daysCount $lostMoney "End: $moneyEarns"
-        if [[ $lostMoney -gt $tempLost ]]
-        then
-            tempLost=$(($lostMoney))
-            lostPerDay=$(($daysCount))
-        fi
+        echo "At end of $monthCheck month, Gambler Lost $countLossDays Days and eliminate from Gambling :("
+        break;
     fi
-    newStakeMoneyPerDay=$((moneyEarns));
+    ((monthCheck++))
 done
 
-echo "Gambler luckiest $winPerDay Days are in a month."
-echo "Gambler Unluckiest $lostPerDay Days are in a month."
-
-#End with UC6
+#End of UseCase 07
