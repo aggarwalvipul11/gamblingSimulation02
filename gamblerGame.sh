@@ -17,7 +17,6 @@ moneyEarns=$((stakeMoneyPerDay));
 exactMoneyEarn=0;
 countProfitDays=0;
 countLossDays=0;
-findValue=0;
 totalMoneyWinsInMonth=0;
 totalMoneyLostInMonth=0;
 
@@ -51,9 +50,9 @@ do
 	moneyEarns=$((stakeMoneyPerDay));
 done
 
+#
 if [[ $exactMoneyEarn -gt $totalStakeAmount ]]
 then
-
     echo "At End of Month, Gambler Wins $countProfitDays Days and $totalMoneyWinsInMonth Dollar."
 elif [[ $exactMoneyEarn -lt $totalStakeAmount ]]
 then
