@@ -8,9 +8,9 @@ declare -A gamblerPaidPerDay
 # Declare variables and assign values. 
 stakeMoneyPerDay=100;
 betMoneyPerGame=1;
-totalDaysPlayed=20;
-maxMoneyWinPerDay=150;
-minMoneyLostPerDay=50;
+stakePercent=$(($((stakeMoneyPerDay/100))*50));
+maxMoneyWinPerDay=$((stakeMoneyPerDay+stakePercent));
+minMoneyLostPerDay=$((stakeMoneyPerDay-stakePercent));
 totalDaysInAMonth=30;
 totalStakeAmount=$((stakeMoneyPerDay*totalDaysInAMonth));
 moneyEarns=$((stakeMoneyPerDay));
@@ -46,7 +46,7 @@ do
         else
             echo "No Loss No Profit!"
         fi                        
-    gamblerPaidPerDay[daysCount]=$((moneyEarns));
+	gamblerPaidPerDay[daysCount]=$((moneyEarns));
 	exactMoneyEarn=$(($exactMoneyEarn+$moneyEarns));    
 	moneyEarns=$((stakeMoneyPerDay));
 done
