@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Welcome Message
 echo "Welcome to the world of Gambling."
