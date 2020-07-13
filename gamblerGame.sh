@@ -9,8 +9,9 @@ declare -A gamblerPaidPerDay
 stakeMoneyPerDay=100;
 betMoneyPerGame=1;
 totalDaysPlayed=20;
-maxMoneyWinPerDay=150;
-minMoneyLostPerDay=50;
+stakePercent=$(($((stakeMoneyPerDay/100))*50));
+maxMoneyWinPerDay=$((stakeMoneyPerDay+stakePercent));
+minMoneyLostPerDay=$((stakeMoneyPerDay-stakePercent));
 
 totalStakeAmount=$((stakeMoneyPerDay*totalDaysPlayed));
 moneyEarns=$((stakeMoneyPerDay));
