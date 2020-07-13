@@ -8,8 +8,9 @@ stakeMoneyPerDay=100;
 betMoneyPerGame=1;
 
 # Added variables for adding a limit for minimum money lost and maximum money wins.
-maxMoneyWinPerDay=150;
-minMoneyLoosePerDay=50;
+stakePercent=$(($((stakeMoneyPerDay/100))*50));
+maxMoneyWinPerDay=$((stakeMoneyPerDay+stakePercent));
+minMoneyLoosePerDay=$((stakeMoneyPerDay-stakePercent));
 moneyEarns=$((stakeMoneyPerDay));
 
 # Apply while condition and checks the condition mets or not
